@@ -1,0 +1,139 @@
+{
+  "uid": "kangra-weather",
+  "title": "Kangra Valley Weather",
+  "timezone": "Asia/Kolkata",
+  "refresh": "1m",
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "schemaVersion": 39,
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Temperature by town",
+      "datasource": {
+        "type": "postgres",
+        "uid": "kangra-pg"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "kangra-pg"
+          },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT event_time AS time, location_name AS metric, temperature_c AS value FROM readings WHERE $__timeFilter(event_time) ORDER BY 1"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "US AQI by town",
+      "datasource": {
+        "type": "postgres",
+        "uid": "kangra-pg"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": ""
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "kangra-pg"
+          },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT event_time AS time, location_name AS metric, us_aqi AS value FROM readings WHERE $__timeFilter(event_time) ORDER BY 1"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Hourly rainfall (1h windows)",
+      "datasource": {
+        "type": "postgres",
+        "uid": "kangra-pg"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "lengthmm"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "kangra-pg"
+          },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT window_end AS time, location_id AS metric, total_precip_mm AS value FROM window_stats WHERE $__timeFilter(window_end) ORDER BY 1"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "table",
+      "title": "Recent alerts",
+      "datasource": {
+        "type": "postgres",
+        "uid": "kangra-pg"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "kangra-pg"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT raised_at, location_id, alert_type, severity, window_start, window_end FROM alerts ORDER BY raised_at DESC LIMIT 50"
+        }
+      ]
+    }
+  ]
+}
